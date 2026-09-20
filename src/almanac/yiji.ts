@@ -1,4 +1,4 @@
-import { TIAN_GAN, DI_ZHI } from './constants';
+import { DI_ZHI } from './constants';
 import { getDayGanZhi, solarToLunar } from './lunar';
 import { gregorianToJDN } from '../utils/date';
 
@@ -106,8 +106,8 @@ export const EVENT_WEIGHTS: Record<string, { yi: number; ji: number }> = {
   '祭祀': { yi: 6, ji: -6 }
 };
 
-// 冲煞表
-const CHONG_SHA: Record<string, { chong: string; sha: string }> = {
+// 冲煞表（按地支查：冲的地支 + 煞方），日、时共用
+export const CHONG_SHA: Record<string, { chong: string; sha: string }> = {
   '子': { chong: '午', sha: '南' },
   '丑': { chong: '未', sha: '东' },
   '寅': { chong: '申', sha: '北' },
@@ -134,6 +134,33 @@ export interface DayYiJi {
   pengZuDi: string;
 }
 
+// 生肖（按地支顺序：子鼠…亥猪）
+const SHENG_XIAO_LIST = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+
+// 由地支查冲的生肖与煞方（日、时共用）
+export function getChongShaByZhi(zhi: string): { chong: string; sha: string; chongShengxiao: string } {
+  const cs = CHONG_SHA[zhi] || { chong: '', sha: '' };
+  return {
+    chong: cs.chong,
+    sha: cs.sha,
+    chongShengxiao: SHENG_XIAO_LIST[DI_ZHI.indexOf(cs.chong)] || ''
+  };
+}
+
+// 由一根干支（日柱或时柱）+ 建星，推出宜、忌。
+// 时辰不传 jianXing；日、时都走这里，改基础表后整张日表/时表一起重算。
+export function getPillarYiJi(ganZhi: string, jianXing?: string): { yi: string[]; ji: string[] } {
+  const gan = ganZhi[0];
+  const zhi = ganZhi[1];
+  const baseYiJi = jianXing ? (YI_JI_DB[jianXing] || { yi: [], ji: [] }) : { yi: [], ji: [] };
+  const ganYiJi = GAN_YI_JI[gan] || { yi: [], ji: [] };
+  const zhiYiJi = ZHI_YI_JI[zhi] || { yi: [], ji: [] };
+  return {
+    yi: [...new Set([...baseYiJi.yi, ...ganYiJi.yi, ...zhiYiJi.yi])],
+    ji: [...new Set([...baseYiJi.ji, ...ganYiJi.ji, ...zhiYiJi.ji])]
+  };
+}
+
 export function getDayYiJi(year: number, month: number, day: number): DayYiJi {
   const jdn = gregorianToJDN(year, month, day);
   const dayGanZhi = getDayGanZhi(jdn);
@@ -151,19 +178,11 @@ export function getDayYiJi(year: number, month: number, day: number): DayYiJi {
   const zhiShenIndex = (jdn + 1) % 12;
   const zhiShen = ZHI_SHEN_CYCLE[zhiShenIndex];
 
-  // 获取宜忌
-  const baseYiJi = YI_JI_DB[jianXing] || { yi: [], ji: [] };
-  const ganYiJi = GAN_YI_JI[gan] || { yi: [], ji: [] };
-  const zhiYiJi = ZHI_YI_JI[zhi] || { yi: [], ji: [] };
-
-  // 合并宜忌
-  const yi = [...new Set([...baseYiJi.yi, ...ganYiJi.yi, ...zhiYiJi.yi])];
-  const ji = [...new Set([...baseYiJi.ji, ...ganYiJi.ji, ...zhiYiJi.ji])];
+  // 获取宜忌（日柱 = 建星 + 天干 + 地支 三层数据合并）
+  const { yi, ji } = getPillarYiJi(gan + zhi, jianXing);
 
   // 冲煞
-  const chongSha = CHONG_SHA[zhi] || { chong: '', sha: '' };
-  const chongShengxiaoIndex = DI_ZHI.indexOf(chongSha.chong);
-  const chongShengxiao = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'][chongShengxiaoIndex];
+  const chongSha = getChongShaByZhi(zhi);
 
   // 彭祖百忌
   const pengZuTian = `戊不受田田主不祥`.replace('戊', gan); // 简化版
@@ -176,7 +195,7 @@ export function getDayYiJi(year: number, month: number, day: number): DayYiJi {
     zhiShen,
     chong: chongSha.chong,
     sha: chongSha.sha,
-    chongShengxiao: chongShengxiao || '',
+    chongShengxiao: chongSha.chongShengxiao,
     pengZuTian,
     pengZuDi
   };
@@ -206,13 +225,9 @@ export function scoreDay(year: number, month: number, day: number, events: strin
   // 冲煞惩罚
   if (avoidShengxiao.length > 0) {
     const dayZhi = dayGanZhi[1];
-    const chongSha = CHONG_SHA[dayZhi];
-    if (chongSha) {
-      const chongIndex = DI_ZHI.indexOf(chongSha.chong);
-      const chongShengxiao = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'][chongIndex];
-      if (avoidShengxiao.includes(chongShengxiao)) {
-        score -= 30;
-      }
+    const chongSha = getChongShaByZhi(dayZhi);
+    if (avoidShengxiao.includes(chongSha.chongShengxiao)) {
+      score -= 30;
     }
   }
 
@@ -224,42 +239,4 @@ export function scoreDay(year: number, month: number, day: number, events: strin
   }
 
   return Math.max(0, Math.min(100, score));
-}
-
-// 获取时辰吉凶
-export function getShiChenInfo(dayGanZhi: string): Array<{ name: string; range: string; ganZhi: string; luck: '吉' | '凶' | '平' }> {
-  const hours = [
-    { name: '子时', range: '23:00-01:00', start: 23 },
-    { name: '丑时', range: '01:00-03:00', start: 1 },
-    { name: '寅时', range: '03:00-05:00', start: 3 },
-    { name: '卯时', range: '05:00-07:00', start: 5 },
-    { name: '辰时', range: '07:00-09:00', start: 7 },
-    { name: '巳时', range: '09:00-11:00', start: 9 },
-    { name: '午时', range: '11:00-13:00', start: 11 },
-    { name: '未时', range: '13:00-15:00', start: 13 },
-    { name: '申时', range: '15:00-17:00', start: 15 },
-    { name: '酉时', range: '17:00-19:00', start: 17 },
-    { name: '戌时', range: '19:00-21:00', start: 19 },
-    { name: '亥时', range: '21:00-23:00', start: 21 },
-  ];
-
-  const dayGan = dayGanZhi[0];
-  const dayGanIndex = TIAN_GAN.indexOf(dayGan);
-  const hourGanStart = (dayGanIndex % 5) * 2;
-
-  // 吉时判定（简化版）
-  const luckCycle = dayGanIndex % 2 === 0
-    ? ['吉', '凶', '吉', '凶', '平', '吉', '凶', '吉', '凶', '平', '吉', '凶']
-    : ['凶', '吉', '凶', '吉', '平', '凶', '吉', '凶', '吉', '平', '凶', '吉'];
-
-  return hours.map((h, i) => {
-    const hourGanIndex = (hourGanStart + i) % 10;
-    const hourZhiIndex = i;
-    return {
-      name: h.name,
-      range: h.range,
-      ganZhi: TIAN_GAN[hourGanIndex] + DI_ZHI[hourZhiIndex],
-      luck: luckCycle[i] as '吉' | '凶' | '平'
-    };
-  });
 }

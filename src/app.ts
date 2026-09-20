@@ -301,32 +301,210 @@ function injectStyles() {
       color: var(--text-light);
     }
 
-    /* 时辰 */
+    /* 前后日导航 */
+    .day-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .day-nav-link {
+      flex: 1;
+      text-align: center;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .day-nav-link:hover {
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    /* 时辰择要卡片 */
+    .hour-summary-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .summary-item {
+      display: block;
+      border-radius: 8px;
+      padding: 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .summary-item.best {
+      background: #e8f5e9;
+      border: 1px solid var(--secondary);
+    }
+
+    .summary-item.worst {
+      background: #ffebee;
+      border: 1px solid var(--accent);
+    }
+
+    .summary-item:hover { box-shadow: var(--shadow); }
+
+    .summary-title { font-size: 17px; font-weight: bold; }
+    .summary-item.best .summary-title { color: var(--secondary); }
+    .summary-item.worst .summary-title { color: var(--accent); }
+
+    .summary-detail { font-size: 13px; color: var(--text-light); margin: 4px 0; }
+    .summary-tags { font-size: 13px; }
+
+    /* 时辰表 */
     .hour-table {
       display: grid;
-      gap: 4px;
+      gap: 8px;
     }
 
     .hour-row {
-      display: grid;
-      grid-template-columns: 80px 100px 80px 60px;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 4px;
-      align-items: center;
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
     }
 
-    .hour-row.吉 { background: #e8f5e9; }
-    .hour-row.凶 { background: #ffebee; }
-    .hour-row.平 { background: #f5f5f5; }
+    .hour-row.吉 { background: #f3faf3; border-left: 4px solid var(--secondary); }
+    .hour-row.凶 { background: #fdf3f4; border-left: 4px solid var(--accent); }
+
+    .hour-row.is-best { box-shadow: 0 0 0 2px rgba(44, 95, 45, 0.35); }
+    .hour-row.is-worst { box-shadow: 0 0 0 2px rgba(196, 30, 58, 0.35); }
+    .hour-row.wan-zi { margin-top: 4px; }
+
+    .hour-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .hour-name { font-weight: bold; font-size: 15px; min-width: 56px; }
+    .hour-range { color: var(--text-light); font-size: 13px; }
+    .hour-ganzhi { font-weight: bold; color: var(--primary); }
+    .hour-shen {
+      font-size: 12px;
+      padding: 1px 8px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.06);
+    }
 
     .hour-luck {
       font-weight: bold;
-      text-align: center;
+      padding: 1px 10px;
+      border-radius: 10px;
+      font-size: 13px;
     }
 
-    .hour-row.吉 .hour-luck { color: var(--secondary); }
-    .hour-row.凶 .hour-luck { color: var(--accent); }
+    .hour-row.吉 .hour-luck { background: var(--secondary); color: #fff; }
+    .hour-row.凶 .hour-luck { background: var(--accent); color: #fff; }
+
+    .hour-belong {
+      font-size: 12px;
+      color: #7a4a00;
+      background: #fff4d6;
+      padding: 1px 8px;
+      border-radius: 10px;
+    }
+
+    .hour-crown {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 1px 10px;
+      border-radius: 10px;
+    }
+
+    .best-crown { background: var(--secondary); color: #fff; }
+    .worst-crown { background: var(--accent); color: #fff; }
+
+    .hour-yiji {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .hour-yiji-label {
+      font-weight: bold;
+      width: 1.6em;
+      text-align: center;
+      border-radius: 4px;
+      flex: none;
+      margin-top: 2px;
+    }
+
+    .hour-yiji-label.yi { background: var(--secondary); color: #fff; }
+    .hour-yiji-label.ji { background: var(--accent); color: #fff; }
+
+    .hour-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .hour-tag {
+      padding: 1px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .hour-tag.yi.match { background: #c8e6c9; color: #1b5e20; }
+    .hour-tag.ji.match { background: #ffcdd2; color: #b71c1c; }
+    .hour-tag.yi.neutral { background: #e8f5e9; color: var(--secondary); }
+    .hour-tag.ji.neutral { background: #ffebee; color: var(--accent); }
+
+    /* 与当日宜忌相冲：黄底黑字加粗描边，最显眼 */
+    .hour-tag.conflict {
+      background: #fff3cd;
+      color: #8a5a00;
+      border: 1px solid #e0a800;
+      font-weight: bold;
+    }
+
+    .hour-chongsha {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .hour-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .hour-legend .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    .dot.match { background: #66bb6a; }
+    .dot.conflict { background: #e0a800; }
+    .dot.neutral { background: #cfcfcf; }
+
+    .hour-zi-note {
+      font-size: 12px;
+      color: var(--text-light);
+      background: #faf3e3;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
 
     /* 农事 */
     .farm-hou {
@@ -618,8 +796,10 @@ function injectStyles() {
       .events-grid { grid-template-columns: repeat(3, 1fr); }
       .result-grid { grid-template-columns: repeat(2, 1fr); }
       .yiji-row { flex-direction: column; }
-      .hour-row { grid-template-columns: 60px 80px 60px 50px; font-size: 13px; }
       .ganzhi { gap: 8px; font-size: 14px; }
+      .hour-summary-row { grid-template-columns: 1fr; }
+      .hour-head { gap: 6px; }
+      .hour-crown { margin-left: 0; }
     }
   `;
   document.head.appendChild(style);
