@@ -301,32 +301,237 @@ function injectStyles() {
       color: var(--text-light);
     }
 
-    /* 时辰 */
-    .hour-table {
-      display: grid;
+    /* 前后天导航 */
+    .day-nav {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* 最吉/最凶摘要 */
+    .extreme-card {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .extreme {
+      flex: 1;
+      border-radius: 8px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+    }
+
+    .extreme-best {
+      background: #eef8ef;
+      border-color: #9bcf9e;
+    }
+
+    .extreme-worst {
+      background: #fdeeef;
+      border-color: #e0a0a6;
+    }
+
+    .extreme-title {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .extreme-best .extreme-title { color: var(--secondary); }
+    .extreme-worst .extreme-title { color: var(--accent); }
+
+    .extreme-main {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .extreme-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .extreme-time {
+      color: var(--text-light);
+      font-size: 13px;
+    }
+
+    .extreme-luck {
+      margin-left: auto;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .extreme-best .extreme-luck { color: var(--secondary); }
+    .extreme-worst .extreme-luck { color: var(--accent); }
+
+    .extreme-gz {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .extreme-tags {
+      display: flex;
+      flex-wrap: wrap;
       gap: 4px;
     }
 
-    .hour-row {
-      display: grid;
-      grid-template-columns: 80px 100px 80px 60px;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 4px;
-      align-items: center;
+    /* 时辰 */
+    .hour-card-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--text-light);
+      margin: -4px 0 12px;
     }
 
-    .hour-row.吉 { background: #e8f5e9; }
-    .hour-row.凶 { background: #ffebee; }
-    .hour-row.平 { background: #f5f5f5; }
+    .hour-card-meta .legend {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .clash-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e6a23c;
+    }
+
+    .hour-table {
+      display: grid;
+      gap: 6px;
+    }
+
+    .hour-row {
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #fcfaf6;
+    }
+
+    .hour-row.吉 { border-left-color: var(--secondary); }
+    .hour-row.凶 { border-left-color: var(--accent); }
+
+    .hour-row.is-best {
+      background: #eef8ef;
+      box-shadow: inset 0 0 0 1px #9bcf9e;
+    }
+
+    .hour-row.is-worst {
+      background: #fdeeef;
+      box-shadow: inset 0 0 0 1px #e0a0a6;
+    }
+
+    .hour-row.next-day {
+      opacity: 0.92;
+      border-left-style: dashed;
+    }
+
+    .hour-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .hour-name {
+      font-weight: bold;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hour-range {
+      font-size: 12px;
+      color: var(--text-light);
+    }
 
     .hour-luck {
+      font-size: 13px;
       font-weight: bold;
-      text-align: center;
     }
 
     .hour-row.吉 .hour-luck { color: var(--secondary); }
     .hour-row.凶 .hour-luck { color: var(--accent); }
+
+    .hour-belong {
+      margin-left: auto;
+      font-size: 12px;
+      color: #8a5a00;
+      background: #fff7e6;
+      border: 1px solid #f0d9a8;
+      border-radius: 4px;
+      padding: 1px 8px;
+    }
+
+    .crown {
+      font-size: 11px;
+      border-radius: 4px;
+      padding: 0 6px;
+      color: #fff;
+    }
+
+    .best-crown { background: var(--secondary); }
+    .worst-crown { background: var(--accent); }
+
+    .hour-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .hour-yiji {
+      flex-basis: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hour-yiji-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .hour-yi-tag, .hour-ji-tag {
+      padding: 1px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .hour-yi-tag { background: #e8f5e9; color: var(--secondary); }
+    .hour-ji-tag { background: #ffebee; color: var(--accent); }
+
+    .hour-yi-tag.clash, .hour-ji-tag.clash {
+      background: #fdf0dc;
+      color: #b26a00;
+      outline: 1px dashed #e6a23c;
+    }
+
+    .hour-note {
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: #fff7e6;
+      border: 1px solid #f0d9a8;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #8a5a00;
+      line-height: 1.7;
+    }
 
     /* 农事 */
     .farm-hou {
@@ -618,7 +823,9 @@ function injectStyles() {
       .events-grid { grid-template-columns: repeat(3, 1fr); }
       .result-grid { grid-template-columns: repeat(2, 1fr); }
       .yiji-row { flex-direction: column; }
-      .hour-row { grid-template-columns: 60px 80px 60px 50px; font-size: 13px; }
+      .extreme-card { flex-direction: column; }
+      .hour-belong { margin-left: 0; }
+      .hour-card-meta .legend { margin-left: 0; }
       .ganzhi { gap: 8px; font-size: 14px; }
     }
   `;
